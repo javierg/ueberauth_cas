@@ -36,7 +36,7 @@ defmodule Ueberauth.Strategy.CAS.API do
   end
 
   defp validate_url do
-    settings(:base_url) <> "/serviceValidate"
+    settings(:base_url) <> "/proxyValidate"
   end
 
   defp settings(key) do
