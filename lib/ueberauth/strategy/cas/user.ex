@@ -16,7 +16,7 @@ defmodule Ueberauth.Strategy.CAS.User do
 
   defp set_name(user, body), do: %User{user | name: email(body)}
   defp set_email(user, body), do: %User{user | email: email(body)}
-  defp set_roles(user, body), do: %User{user | roles: ["developer", "admin"]}
+  defp set_roles(user, _body), do: %User{user | roles: ["developer", "admin"]}
 
   defp email(body) do
     Floki.find(body, "cas:user")
