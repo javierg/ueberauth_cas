@@ -19,11 +19,9 @@ defmodule Ueberauth.Strategy.CAS.User do
   defp set_roles(user, _body), do: %User{user | roles: ["developer", "admin"]}
 
   defp email(body) do
-    Floki.find(body, "cas:user")
-    |> List.first
-    |> Tuple.to_list
-    |> List.last
-    |> List.first
+    body
+    |> xpath(~x"//cas:serviceResponse/cas:authenticationSuccess/cas:user/text()")
+    |> List.to_string
     |> String.downcase
   end
 end

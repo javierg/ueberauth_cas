@@ -10,28 +10,28 @@ defmodule UeberauthCAS.Mixfile do
       version: @version,
       elixir: "~> 1.1",
       name: "Ueberauth CAS strategy",
-      package: package(),
+      package: package,
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
       source_url: @url,
       homepage_url: @url,
       description: "An Ueberauth strategy for CAS authentication.",
-      deps: deps(),
+      deps: deps,
       test_coverage: [tool: ExCoveralls],
     ]
   end
 
   def application do
     [
-      applications: [:logger, :ueberauth, :httpoison]
+      applications: [:logger, :ueberauth, :httpoison, :sweet_xml]
     ]
   end
 
   defp deps do
     [
       {:ueberauth, "~> 0.2"},
-      {:httpoison, "~> 0.9.2"},
-      {:floki, "~> 0.18.0"},
+      {:httpoison, "~> 0.9.0"},
+      {:sweet_xml, "~> 0.3.0"},
       {:excoveralls, "~> 0.5", only: :test},
       {:inch_ex, "~> 0.5.0", only: :docs},
       {:earmark, "~> 0.2.1", only: :dev},
