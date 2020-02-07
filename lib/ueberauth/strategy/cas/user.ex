@@ -1,4 +1,5 @@
 defmodule Ueberauth.Strategy.CAS.User do
+  import SweetXml
   @moduledoc """
   Representation of a CAS user with their roles.
   """
