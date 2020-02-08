@@ -10,13 +10,13 @@ defmodule UeberauthCAS.Mixfile do
       version: @version,
       elixir: "~> 1.1",
       name: "Ueberauth CAS strategy",
-      package: package,
+      package: package(),
       build_embedded: Mix.env == :prod,
       start_permanent: Mix.env == :prod,
       source_url: @url,
       homepage_url: @url,
       description: "An Ueberauth strategy for CAS authentication.",
-      deps: deps,
+      deps: deps(),
       test_coverage: [tool: ExCoveralls],
     ]
   end

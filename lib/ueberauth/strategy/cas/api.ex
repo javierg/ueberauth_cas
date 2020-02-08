@@ -40,7 +40,10 @@ defmodule Ueberauth.Strategy.CAS.API do
   end
 
   defp settings(key) do
-    {_, settings} = Application.get_env(:ueberauth, Ueberauth)[:providers][:cas]
-    settings[key]
+    Application.get_env(:ueberauth, Ueberauth)[:providers][:cas]
+    |> settings(key)
   end
+
+  defp settings({_, values}, key), do: values[key]
+  defp settings([{_, values}], key), do: values[key]
 end
