@@ -1,51 +1,51 @@
 defmodule UeberauthCAS.Mixfile do
   use Mix.Project
 
-  @version "1.0.0"
-  @url     "https://github.com/marceldegraaf/ueberauth_cas"
+  @version "2.1.0"
+  @url "https://github.com/marceldegraaf/ueberauth_cas"
 
   def project do
     [
       app: :ueberauth_cas,
       version: @version,
-      elixir: "~> 1.1",
+      elixir: "~> 1.8",
       name: "Ueberauth CAS strategy",
       package: package(),
-      build_embedded: Mix.env == :prod,
-      start_permanent: Mix.env == :prod,
+      build_embedded: Mix.env() == :prod,
+      start_permanent: Mix.env() == :prod,
       source_url: @url,
       homepage_url: @url,
       description: "An Ueberauth strategy for CAS authentication.",
       deps: deps(),
       test_coverage: [tool: ExCoveralls],
-    ]
-  end
-
-  def application do
-    [
-      applications: [:logger, :ueberauth, :httpoison, :sweet_xml]
+      docs: docs(),
+      test_coverage: [tool: ExCoveralls]
     ]
   end
 
   defp deps do
     [
-      {:ueberauth, "~> 0.2"},
-      {:httpoison, "~> 0.9.0"},
-      {:sweet_xml, "~> 0.3.0"},
-      {:excoveralls, "~> 0.5", only: :test},
-      {:inch_ex, "~> 0.5.0", only: :docs},
-      {:earmark, "~> 0.2.1", only: :dev},
-      {:ex_doc, "~> 0.12.0", only: :dev},
-      {:mock, "~> 0.1.1", only: :test},
+      {:ueberauth, "~> 0.6.3"},
+      {:httpoison, "~> 1.7.0"},
+      {:sweet_xml, "~> 0.6.6"},
+      {:excoveralls, "~> 0.13.1", only: :test},
+      {:inch_ex, "~> 2.0.0", only: :docs},
+      {:earmark, "~> 1.4.10", only: :dev},
+      {:ex_doc, "~> 0.22.6", only: :dev},
+      {:mock, "~> 0.3.5", only: :test}
     ]
+  end
+
+  defp docs do
+    [extras: ["README.md", "CHANGELOG.md"]]
   end
 
   defp package do
     [
-      files: ["lib", "mix.exs", "README.md", "LICENSE.md"],
-      maintainers: ["Marcel de Graaf"],
+      files: ["lib", "mix.exs", "README.md", "LICENSE.md", "CHANGELOG.md"],
+      maintainers: ["Marcel de Graaf", "Niko Strijbol"],
       licenses: ["MIT"],
-      links: %{"GitHub": @url}
+      links: %{GitHub: @url}
     ]
   end
 end

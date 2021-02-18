@@ -3,24 +3,27 @@ defmodule Ueberauth.Strategy.CAS.API do
   CAS server API implementation.
   """
 
-  use Ueberauth.Strategy
   alias Ueberauth.Strategy.CAS
 
-  @doc "Returns the URL to this CAS server's login page."
-  def login_url do
-    settings(:base_url) <> "/login"
-  end
+  import SweetXml
 
   @doc "Validate a CAS Service Ticket with the CAS server."
-  def validate_ticket(ticket, conn) do
-    HTTPoison.get(validate_url(), [], params: %{ticket: ticket, service: callback_url(conn)}, ssl: [{:versions, [:'tlsv1.2']}], recv_timeout: 500)
-    |> handle_validate_ticket_response
+  def validate_ticket(ticket, validate_url, service) do
+    validate_url
+    |> HTTPoison.get([], params: %{ticket: ticket, service: service}, ssl: [{:versions, [:'tlsv1.2']}], recv_timeout: 500)
+    |> handle_validate_ticket_response()
   end
 
   defp handle_validate_ticket_response({:ok, %HTTPoison.Response{status_code: 200, body: body}}) do
-    case String.match?(body, ~r/cas:authenticationFailure/) do
-      true -> {:error, error_from_body(body)}
-      _    -> {:ok, CAS.User.from_xml(body)}
+    # We catch XML parse errors, but they will still be shown in the logs.
+    # See https://github.com/kbrw/sweet_xml/issues/48
+    try do
+      case xpath(body, ~x"//cas:serviceResponse/cas:authenticationSuccess") do
+        nil -> {:error, error_from_body(body)}
+        _ -> {:ok, CAS.User.from_xml(body)}
+      end
+    catch
+      :exit, {_type, reason} -> {:error, {"malformed_xml", "Malformed XML response: #{inspect(reason)}"}}
     end
   end
 
@@ -28,15 +31,21 @@ defmodule Ueberauth.Strategy.CAS.API do
     {:error, reason}
   end
 
-  defp error_from_body(body) do
-    case Regex.named_captures(~r/code="(?<code>\w+)"/, body) do
-      %{"code" => code} -> code
-      _                 -> "UNKNOWN_ERROR"
-    end
-  end
+  defp sanitize_string(value) when value == "", do: nil
+  defp sanitize_string(value), do: value
 
-  defp validate_url do
-    settings(:base_url) <> "/serviceValidate"
+  defp error_from_body(body) do
+    error_code =
+      xpath(body, ~x"/*/cas:authenticationFailure/@code")
+      |> to_string()
+      |> sanitize_string()
+
+    message =
+      xpath(body, ~x"/*/cas:authenticationFailure/text()")
+      |> to_string()
+      |> sanitize_string()
+
+    {error_code || "unknown_error", message || "Unknown error"}
   end
 
   defp settings(key) do
